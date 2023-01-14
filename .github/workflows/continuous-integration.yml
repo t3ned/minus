@@ -1,0 +1,125 @@
+name: Continuous Integration
+
+on:
+    push:
+        branches:
+            - main
+
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    install-dependencies:
+        name: Install dependencies
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 7
+                  run_install: false
+
+            - name: Resolve PNPM store path
+              id: pnpm-store-path
+              run: |
+                  echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup PNPM cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.pnpm-store-path.outputs.PNPM_STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        needs:
+            - install-dependencies
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 7
+                  run_install: false
+
+            - name: Resolve PNPM store path
+              id: pnpm-store-path
+              run: |
+                  echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup PNPM cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.pnpm-store-path.outputs.PNPM_STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Run lint
+              run: pnpm lint
+
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        needs:
+            - install-dependencies
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+
+            - name: Setup PNPM
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 7
+                  run_install: false
+
+            - name: Resolve PNPM store path
+              id: pnpm-store-path
+              run: |
+                  echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup PNPM cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.pnpm-store-path.outputs.PNPM_STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Run build
+              run: pnpm build
+              env:
+                  DISABLE_ERD: true
