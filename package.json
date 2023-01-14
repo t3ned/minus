@@ -8,7 +8,7 @@
 	"scripts": {
 		"prebuild": "npx rimraf dist",
 		"build": "nest build",
-		"format": "npx prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+		"format": "npx prettier --write \"src/**/*.ts\"",
 		"start": "npx nest start",
 		"dev": "npx nest start --watch",
 		"debug": "npx nest start --debug --watch",
