@@ -7,7 +7,7 @@
 	"license": "Apache-2.0",
 	"scripts": {
 		"prebuild": "npx rimraf dist",
-		"build": "nest build",
+		"build": "npx prisma generate && npx nest build",
 		"format": "npx prettier --write \"src/**/*.ts\"",
 		"start": "npx nest start",
 		"dev": "npx nest start --watch",
