@@ -7,7 +7,7 @@ import configuration from "./config/configuration";
 
 import { HealthModule } from "@/modules/health";
 
-import { RedisModule } from "@/providers";
+import { PrismaModule, RedisModule } from "@/providers";
 
 @Module({
 	imports: [
@@ -16,6 +16,7 @@ import { RedisModule } from "@/providers";
 		}),
 		HealthModule,
 		RedisModule,
+		PrismaModule,
 	],
 	controllers: [AppController],
 	providers: [
