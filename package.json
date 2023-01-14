@@ -27,6 +27,7 @@
 		"dotenv": "^16.0.3",
 		"dotenv-expand": "^10.0.0",
 		"handlebars": "^4.7.7",
+		"ioredis": "^5.2.5",
 		"module-alias": "^2.2.2",
 		"reflect-metadata": "^0.1.13",
 		"rimraf": "^3.0.2",

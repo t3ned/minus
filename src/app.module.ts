@@ -3,8 +3,11 @@ import { APP_FILTER } from "@nestjs/core";
 import { AppController } from "./app.controller";
 import { HttpExceptionFilter } from "@/filters";
 import { ConfigModule } from "@nestjs/config";
-import { HealthModule } from "@/modules/health";
 import configuration from "./config/configuration";
+
+import { HealthModule } from "@/modules/health";
+
+import { RedisModule } from "@/providers";
 
 @Module({
 	imports: [
@@ -12,6 +15,7 @@ import configuration from "./config/configuration";
 			load: [() => configuration],
 		}),
 		HealthModule,
+		RedisModule,
 	],
 	controllers: [AppController],
 	providers: [
