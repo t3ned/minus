@@ -23,6 +23,7 @@
 		"@sentry/node": "^7.30.0",
 		"@sentry/tracing": "^7.30.0",
 		"@t3ned/env": "^1.0.0",
+		"@t3ned/snowflake": "^1.0.0",
 		"dotenv": "^16.0.3",
 		"dotenv-expand": "^10.0.0",
 		"handlebars": "^4.7.7",
