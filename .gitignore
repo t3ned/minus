@@ -1,35 +1,33 @@
-# compiled output
-/dist
-/node_modules
-
 # Logs
 logs
 *.log
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 
-# OS
+# Editor
+.vscode/
+.idea/
+
+# dependencies
+node_modules
+
+# Typescript Build
+dist/
+*.tsbuildinfo
+
+# testing
+coverage
+
+# misc
 .DS_Store
+*.pem
 
-# Tests
-/coverage
-/.nyc_output
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+# env files
+.env
