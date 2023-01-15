@@ -16,8 +16,74 @@ datasource db {
     url      = env("POSTGRES_URL")
 }
 
-model Test {
-    id BigInt @id @db.BigInt
+model User {
+    id                 BigInt   @id @db.BigInt
+    primaryEmailId     BigInt?  @unique @map("primary_email_id") @db.BigInt
+    displayName        String   @map("display_name") @db.VarChar(15)
+    username           String   @unique @db.VarChar(15)
+    normalizedUsername String   @unique @map("normalized_username") @db.VarChar(15)
+    avatarMediaAssetId BigInt?  @unique @map("avatar_media_asset_id") @db.BigInt
+    firstName          String   @map("first_name")
+    lastName           String   @map("last_name")
+    password           String   @db.Text
+    countryCode        String   @map("country_code") @db.Char(2)
+    languageCode       String   @map("language_code") @db.Char(2)
+    gender             Int      @db.SmallInt
+    roles              BigInt   @db.BigInt
+    flags              BigInt   @db.BigInt
+    publicFlags        BigInt   @map("public_flags") @db.BigInt
+    updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamp()
 
-    @@map("tests")
+    emails           Email[]     @relation("UserEmail")
+    primaryEmail     Email?      @relation("PrimaryUserEmail", fields: [primaryEmailId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+    avatarMediaAsset MediaAsset? @relation("Avatar", fields: [avatarMediaAssetId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    sessions         Session[]
+
+    @@map("users")
+}
+
+model Email {
+    id              BigInt   @id @db.BigInt
+    userId          BigInt   @map("user_id") @db.BigInt
+    email           String   @unique @db.VarChar(255)
+    normalizedEmail String   @unique @map("normalized_email") @db.VarChar(255)
+    isVerified      Boolean  @map("is_verified") @db.Boolean
+    updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamp()
+
+    user        User  @relation("UserEmail", fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    primaryUser User? @relation("PrimaryUserEmail")
+
+    @@map("emails")
+}
+
+model Session {
+    id              BigInt  @id @db.BigInt
+    userId          BigInt  @map("user_id") @db.BigInt
+    token           String  @db.Char(64)
+    version         String  @db.Char(8)
+    isActive        Boolean @map("is_active") @db.Boolean
+    ipAddress       String  @map("ip_address") @db.VarChar(255)
+    userAgent       String? @map("user_agent") @db.VarChar(255)
+    city            String? @db.VarChar(255)
+    region          String? @db.VarChar(255)
+    timezone        String? @db.VarChar(255)
+    countryCode     String? @map("country_code") @db.VarChar(255)
+    browser         String? @db.VarChar(255)
+    operatingSystem String? @map("operating_system") @db.VarChar(255)
+
+    user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@unique([userId, version])
+    @@map("sessions")
+}
+
+model MediaAsset {
+    id            BigInt @id @db.BigInt
+    fileName      String @map("file_name") @db.VarChar(255)
+    fileExtension String @map("file_extension") @db.VarChar(255)
+    hash          String @db.Char(32)
+
+    users User[] @relation("Avatar")
+
+    @@map("media_assets")
 }
