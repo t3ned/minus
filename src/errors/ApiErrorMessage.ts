@@ -7,6 +7,7 @@ export const ApiErrorMessage: Record<ApiErrorCode, string> = {
 
 	// Unauthorized
 	[ApiErrorCode.UNAUTHORIZED]: "Unauthorized",
+	[ApiErrorCode.INVALID_CREDENTIALS]: "Invalid Credentials",
 
 	// Forbidden
 	[ApiErrorCode.FORBIDDEN]: "Forbidden",
@@ -14,6 +15,7 @@ export const ApiErrorMessage: Record<ApiErrorCode, string> = {
 	// Not Found
 	[ApiErrorCode.NOT_FOUND]: "Not Found",
 	[ApiErrorCode.ROUTE_NOT_FOUND]: "Unknown Route",
+	[ApiErrorCode.USER_NOT_FOUND]: "Unknown User",
 
 	// Conflict
 	[ApiErrorCode.CONFLICT]: "Conflict",

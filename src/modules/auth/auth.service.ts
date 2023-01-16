@@ -1,11 +1,16 @@
-import { EmailConflictException, UsernameConflictException } from "@/errors";
+import {
+	EmailConflictException,
+	InvalidCredentialsException,
+	UsernameConflictException,
+	UserNotFoundException,
+} from "@/errors";
 import { SessionService } from "@/modules/sessions";
 import { UserService } from "@/modules/users";
 import { safeBigInt, sha256 } from "@/utils";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Session } from "@prisma/client";
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
 
 @Injectable()
 export class AuthService {
@@ -26,7 +31,7 @@ export class AuthService {
 	 *
 	 * @returns The user, session and authorization token
 	 */
-	async signup(options: AuthService.SignupOptions): Promise<AuthService.SignupResult> {
+	async signup(options: AuthService.SignupOptions): Promise<AuthService.AuthenticatedResult> {
 		const existingUserWithEmail = await this.users.findByEmail(options.email);
 		if (existingUserWithEmail) {
 			throw new EmailConflictException();
@@ -44,6 +49,32 @@ export class AuthService {
 		const session = await this.sessions.create(user.id, options);
 
 		// TODO: send email verification
+
+		return {
+			user,
+			session,
+			token: session.authorization,
+		};
+	}
+
+	/**
+	 * Login to an existing user
+	 * @param options The login options
+	 *
+	 * @returns The user, session and authorization token
+	 */
+	async login(options: AuthService.LoginOptions): Promise<AuthService.AuthenticatedResult> {
+		const user = await this.users.findByEmailOrUsername(options.username);
+		if (!user) {
+			throw new UserNotFoundException();
+		}
+
+		const isValidCredentials = await compare(options.password, user.password);
+		if (!isValidCredentials) {
+			throw new InvalidCredentialsException();
+		}
+
+		const session = await this.sessions.create(user.id, options);
 
 		return {
 			user,
@@ -79,7 +110,12 @@ export namespace AuthService {
 		password: string;
 	}
 
-	export interface SignupResult {
+	export interface LoginOptions extends SessionService.CreateOptions {
+		username: string;
+		password: string;
+	}
+
+	export interface AuthenticatedResult {
 		user: UserService.UserWithEmail;
 		session: Session;
 		token: string;

@@ -5,6 +5,7 @@ export enum ApiErrorCode {
 
 	// Unauthorized
 	UNAUTHORIZED = 401_00,
+	INVALID_CREDENTIALS,
 
 	// Forbidden
 	FORBIDDEN = 403_00,
@@ -12,6 +13,7 @@ export enum ApiErrorCode {
 	// Not Found
 	NOT_FOUND = 404_00,
 	ROUTE_NOT_FOUND,
+	USER_NOT_FOUND,
 
 	// Conflict
 	CONFLICT = 409_00,

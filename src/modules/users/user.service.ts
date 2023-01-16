@@ -97,6 +97,30 @@ export class UserService {
 			},
 		});
 	}
+
+	/**
+	 * Find a user by email or username
+	 * @param username The email or username
+	 *
+	 * @returns The user, if found
+	 */
+	findByEmailOrUsername(username: string): Promise<UserService.UserWithEmail | null> {
+		return this.prisma.user.findFirst({
+			include: {
+				primaryEmail: true,
+			},
+			where: {
+				emails: {
+					some: {
+						normalizedEmail: normalizeEmail(username),
+					},
+				},
+				OR: {
+					normalizedUsername: username.toLocaleLowerCase(),
+				},
+			},
+		});
+	}
 }
 
 export namespace UserService {
