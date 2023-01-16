@@ -1,5 +1,5 @@
 import { Body, Controller, Headers, HttpCode, HttpStatus, Ip, Post, Version } from "@nestjs/common";
-import { SignupBodyDTO, SignupBodyDTOType } from "./dto";
+import { LoginBodyDTO, LoginBodyDTOType, SignupBodyDTO, SignupBodyDTOType } from "./dto";
 import { AuthService } from "./auth.service";
 import { UserMapper } from "../users/user.mapper";
 
@@ -28,6 +28,24 @@ export class AuthController {
 			countryCode: body.country_code,
 			languageCode: body.language_code,
 			gender: body.gender,
+			ipAddress,
+			userAgent,
+		});
+
+		return this.userMapper.mapCurrentWithToken(user, token);
+	}
+
+	@Post("login")
+	@Version("1")
+	@HttpCode(HttpStatus.CREATED)
+	async login(
+		@Body(LoginBodyDTO()) body: LoginBodyDTOType,
+		@Headers("user-agent") userAgent: string,
+		@Ip() ipAddress: string,
+	) {
+		const { user, token } = await this.auth.login({
+			username: body.username,
+			password: body.password,
 			ipAddress,
 			userAgent,
 		});
