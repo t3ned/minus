@@ -1,15 +1,25 @@
-import { Body, Controller, Headers, HttpCode, HttpStatus, Ip, Post, Version } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Ip, Post, Req, Version } from "@nestjs/common";
 import { LoginBodyDTO, LoginBodyDTOType, SignupBodyDTO, SignupBodyDTOType } from "./dto";
+import { SessionService, SessionMapper } from "@/modules/sessions";
+import { UserMapper } from "@/modules/users";
 import { AuthService } from "./auth.service";
-import { UserMapper } from "../users/user.mapper";
+import { Request } from "express";
+import { Auth } from "./guard";
 
 @Controller("auth")
 export class AuthController {
 	/**
 	 * @param auth The auth service
+	 * @param sessions The session service
+	 * @param sessionMapper The session mapper
 	 * @param userMapper The user mapper
 	 */
-	constructor(private auth: AuthService, private userMapper: UserMapper) {}
+	constructor(
+		private auth: AuthService,
+		private sessions: SessionService,
+		private sessionMapper: SessionMapper,
+		private userMapper: UserMapper,
+	) {}
 
 	@Post("signup")
 	@Version("1")
@@ -51,5 +61,16 @@ export class AuthController {
 		});
 
 		return this.userMapper.mapCurrentWithToken(user, token);
+	}
+
+	@Get("sessions")
+	@Version("1")
+	@HttpCode(HttpStatus.OK)
+	@Auth()
+	async getSessions(@Req() req: Request) {
+		const currentUser = req.authenticatedUser;
+		const currentSession = req.authenticatedSession;
+		const sessions = await this.sessions.findManyForUserId(currentUser.id);
+		return this.sessionMapper.mapCurrentAndMany(currentSession, sessions);
 	}
 }
