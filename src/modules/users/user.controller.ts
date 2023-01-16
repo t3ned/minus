@@ -1,8 +1,13 @@
+import {
+	GetUserByIdParamDTO,
+	GetUserByIdParamDTOType,
+	GetUserByUsernameParamDTO,
+	GetUserByUsernameParamDTOType,
+} from "./dto";
 import { Controller, Get, HttpCode, HttpStatus, Param, Req, Version } from "@nestjs/common";
 import { UserMapper } from "./user.mapper";
 import { Auth } from "@/modules/auth";
 import { Request } from "express";
-import { GetUserByIdParamDTO, GetUserByIdParamDTOType } from "./dto";
 import { UserService } from "./user.service";
 
 @Controller("users")
@@ -20,6 +25,15 @@ export class UserController {
 	getCurrentUser(@Req() req: Request) {
 		const currentUser = req.authenticatedUser;
 		return this.mapper.mapCurrent(currentUser);
+	}
+
+	@Get("@:username")
+	@HttpCode(HttpStatus.OK)
+	@Version("1")
+	@Auth()
+	async getUserByUsername(@Param(GetUserByUsernameParamDTO()) param: GetUserByUsernameParamDTOType) {
+		const user = await this.users.findByUsernameOrThrow(param.username);
+		return this.mapper.map(user);
 	}
 
 	@Get(":user_id")

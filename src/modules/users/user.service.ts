@@ -129,6 +129,21 @@ export class UserService {
 	}
 
 	/**
+	 * Find a user by username, or throw if not found
+	 * @param username The username to lookup
+	 *
+	 * @returns The user
+	 */
+	async findByUsernameOrThrow(username: string): Promise<User> {
+		const user = await this.findByUsername(username);
+		if (!user) {
+			throw new UserNotFoundException();
+		}
+
+		return user;
+	}
+
+	/**
 	 * Find a user by email or username
 	 * @param username The email or username
 	 *
