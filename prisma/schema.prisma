@@ -73,7 +73,7 @@ model Session {
 
     user User @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
-    @@unique([userId, version])
+    @@unique([userId, version], name: "userVersion")
     @@map("sessions")
 }
 
