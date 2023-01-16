@@ -21,6 +21,16 @@ export class UserMapper {
 	}
 
 	/**
+	 * Map many users
+	 * @param users The users
+	 *
+	 * @returns The mapped users
+	 */
+	mapMany(users: User[]): UserMapper.User[] {
+		return users.map(this.map.bind(this));
+	}
+
+	/**
 	 * Map the current user
 	 * @param user The current user
 	 *

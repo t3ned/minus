@@ -167,6 +167,27 @@ export class UserService {
 			},
 		});
 	}
+
+	/**
+	 * Search for a user by username
+	 * @param username The username to search
+	 * @param options The search options
+	 *
+	 * @returns The users
+	 */
+	searchByUsername(username: string, options: UserService.SearchOptions): Promise<User[]> {
+		return this.prisma.user.findMany({
+			where: {
+				normalizedUsername: {
+					startsWith: username.toLocaleLowerCase(),
+				},
+			},
+			orderBy: {
+				username: "asc",
+			},
+			take: options.limit,
+		});
+	}
 }
 
 export namespace UserService {
@@ -191,5 +212,9 @@ export namespace UserService {
 
 	export interface UserWithEmail extends User {
 		primaryEmail: Email | null;
+	}
+
+	export interface SearchOptions {
+		limit: number;
 	}
 }
