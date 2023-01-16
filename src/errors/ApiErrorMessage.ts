@@ -17,7 +17,8 @@ export const ApiErrorMessage: Record<ApiErrorCode, string> = {
 
 	// Conflict
 	[ApiErrorCode.CONFLICT]: "Conflict",
-	[ApiErrorCode.SIGNUP_EMAIL_CONFLICT]: "User already exists with email",
+	[ApiErrorCode.EMAIL_CONFLICT]: "User already exists with email",
+	[ApiErrorCode.USERNAME_CONFLICT]: "User already exists with username",
 
 	// Too Many Requests
 	[ApiErrorCode.TOO_MANY_REQUESTS]: "Too Many Requests",

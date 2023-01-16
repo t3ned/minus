@@ -15,7 +15,8 @@ export enum ApiErrorCode {
 
 	// Conflict
 	CONFLICT = 409_00,
-	SIGNUP_EMAIL_CONFLICT,
+	EMAIL_CONFLICT,
+	USERNAME_CONFLICT,
 
 	// Too Many Requests
 	TOO_MANY_REQUESTS = 429_00,

@@ -1,10 +1,12 @@
 import { PrismaService } from "@/providers";
 import { sha256, snowflake } from "@/utils";
+import { Injectable } from "@nestjs/common";
 import { Session } from "@prisma/client";
 import { randomBytes } from "crypto";
 import UAParser from "ua-parser-js";
 import geoip from "geoip-lite";
 
+@Injectable()
 export class SessionService {
 	/**
 	 * @param prisma The prisma service
@@ -37,7 +39,7 @@ export class SessionService {
 				city: geolocation?.city,
 				region: geolocation?.region,
 				timezone: geolocation?.timezone,
-				countryCode: geolocation?.country,
+				countryCode: geolocation?.country.toString(),
 				browser: userAgent?.browser.name,
 				operatingSystem: userAgent?.os.name,
 				user: {

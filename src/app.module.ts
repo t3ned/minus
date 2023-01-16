@@ -8,6 +8,9 @@ import configuration from "./config/configuration";
 import { HealthModule } from "@/modules/health";
 
 import { PrismaModule, RedisModule } from "@/providers";
+import { AuthModule } from "@/modules/auth/auth.module";
+import { UserModule } from "@/modules/users";
+import { SessionModule } from "@/modules/sessions";
 
 @Module({
 	imports: [
@@ -17,6 +20,9 @@ import { PrismaModule, RedisModule } from "@/providers";
 		HealthModule,
 		RedisModule,
 		PrismaModule,
+		AuthModule,
+		UserModule,
+		SessionModule,
 	],
 	controllers: [AppController],
 	providers: [

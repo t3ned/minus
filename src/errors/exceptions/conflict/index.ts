@@ -1,2 +1,3 @@
 export * from "./ConflictException";
-export * from "./SignupEmailConflictException";
+export * from "./EmailConflictException";
+export * from "./UsernameConflictException";

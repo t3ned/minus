@@ -1,8 +1,10 @@
 import { PrismaService } from "@/providers";
 import { snowflake } from "@/utils";
+import { Injectable } from "@nestjs/common";
 import { Email, User } from "@prisma/client";
 import normalizeEmail from "normalize-email";
 
+@Injectable()
 export class UserService {
 	/**
 	 * @param prisma The prisma service
@@ -79,6 +81,20 @@ export class UserService {
 						normalizedEmail: normalizeEmail(email),
 					},
 				},
+			},
+		});
+	}
+
+	/**
+	 * Find a user by username
+	 * @param username The username to lookup
+	 *
+	 * @returns The user, if found
+	 */
+	findByUsername(username: string): Promise<User | null> {
+		return this.prisma.user.findUnique({
+			where: {
+				normalizedUsername: username.toLocaleLowerCase(),
 			},
 		});
 	}

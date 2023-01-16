@@ -31,4 +31,8 @@ export interface Configuration {
 		dsn?: string;
 		tracesSampleRate: number;
 	};
+
+	security: {
+		passwordSaltRounds: number;
+	};
 }

@@ -37,6 +37,10 @@ const configuration: Configuration = {
 		dsn: env.str("SENTRY_DSN", "") || undefined,
 		tracesSampleRate: env.num("SENTRY_TRACES_SAMPLE_RATE", 1.0),
 	},
+
+	security: {
+		passwordSaltRounds: 10,
+	},
 };
 
 export default configuration;
