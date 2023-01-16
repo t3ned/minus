@@ -1,8 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable, SetMetadata } from "@nestjs/common";
 import { AuthDecoratorKey } from "../auth.constants";
 import { UnauthorizedException } from "@/errors";
-import { Session, User } from "@prisma/client";
+import { UserService } from "@/modules/users";
 import { AuthService } from "../auth.service";
+import { Session } from "@prisma/client";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 
@@ -21,7 +22,7 @@ export class AuthGuard implements CanActivate {
 	 * @returns Whether the guard can activate
 	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const authMetadata = this.reflector.getAll(AuthDecoratorKey.AUTH_GUARD, [
+		const authMetadata = this.reflector.getAllAndOverride(AuthDecoratorKey.AUTH_GUARD, [
 			context.getHandler(),
 			context.getClass(),
 		]);
@@ -48,7 +49,7 @@ export const Auth = () => {
 
 declare module "express" {
 	export interface Request {
-		authenticatedUser: User;
+		authenticatedUser: UserService.UserWithEmail;
 		authenticatedSession: Session;
 	}
 }
