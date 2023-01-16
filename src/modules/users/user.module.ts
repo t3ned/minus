@@ -8,6 +8,6 @@ import { Module } from "@nestjs/common";
 	imports: [PrismaModule],
 	controllers: [UserController],
 	providers: [UserService, UserMapper],
-	exports: [UserService],
+	exports: [UserService, UserMapper],
 })
 export class UserModule {}

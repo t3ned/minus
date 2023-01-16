@@ -1,4 +1,5 @@
 import { SessionModule } from "@/modules/sessions";
+import { AuthController } from "./auth.controller";
 import { UserModule } from "@/modules/users";
 import { AuthService } from "./auth.service";
 import { ConfigModule } from "@nestjs/config";
@@ -7,7 +8,7 @@ import { AuthGuard } from "./guard";
 
 @Module({
 	imports: [ConfigModule, UserModule, SessionModule],
-	providers: [AuthService],
+	controllers: [AuthController],
 	providers: [AuthService, AuthGuard],
 	exports: [AuthService, AuthGuard],
 })

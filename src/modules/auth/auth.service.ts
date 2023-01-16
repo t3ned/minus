@@ -80,7 +80,7 @@ export namespace AuthService {
 	}
 
 	export interface SignupResult {
-		user: UserService.UserWithEmails;
+		user: UserService.UserWithEmail;
 		session: Session;
 		token: string;
 	}
