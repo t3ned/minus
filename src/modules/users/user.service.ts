@@ -110,14 +110,18 @@ export class UserService {
 				primaryEmail: true,
 			},
 			where: {
-				emails: {
-					some: {
-						normalizedEmail: normalizeEmail(username),
+				OR: [
+					{
+						emails: {
+							some: {
+								normalizedEmail: normalizeEmail(username),
+							},
+						},
 					},
-				},
-				OR: {
-					normalizedUsername: username.toLocaleLowerCase(),
-				},
+					{
+						normalizedUsername: username.toLocaleLowerCase(),
+					},
+				],
 			},
 		});
 	}
