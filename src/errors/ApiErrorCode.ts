@@ -13,6 +13,10 @@ export enum ApiErrorCode {
 	NOT_FOUND = 404_00,
 	ROUTE_NOT_FOUND,
 
+	// Conflict
+	CONFLICT = 409_00,
+	SIGNUP_EMAIL_CONFLICT,
+
 	// Too Many Requests
 	TOO_MANY_REQUESTS = 429_00,
 

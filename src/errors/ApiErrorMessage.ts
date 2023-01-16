@@ -15,6 +15,10 @@ export const ApiErrorMessage: Record<ApiErrorCode, string> = {
 	[ApiErrorCode.NOT_FOUND]: "Not Found",
 	[ApiErrorCode.ROUTE_NOT_FOUND]: "Unknown Route",
 
+	// Conflict
+	[ApiErrorCode.CONFLICT]: "Conflict",
+	[ApiErrorCode.SIGNUP_EMAIL_CONFLICT]: "User already exists with email",
+
 	// Too Many Requests
 	[ApiErrorCode.TOO_MANY_REQUESTS]: "Too Many Requests",
 
