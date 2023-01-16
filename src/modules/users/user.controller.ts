@@ -4,11 +4,12 @@ import {
 	GetUserByUsernameParamDTO,
 	GetUserByUsernameParamDTOType,
 } from "./dto";
-import { Controller, Get, HttpCode, HttpStatus, Param, Req, Version } from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Param, Query, Req, Version } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UserMapper } from "./user.mapper";
 import { Auth } from "@/modules/auth";
 import { Request } from "express";
+import { SearchUserByUsernameQueryDTO, SearchUserByUsernameQueryDTOType } from "./dto/searchByUsername";
 
 @Controller("users")
 export class UserController {
@@ -25,6 +26,18 @@ export class UserController {
 	getCurrentUser(@Req() req: Request) {
 		const currentUser = req.authenticatedUser;
 		return this.userMapper.mapCurrent(currentUser);
+	}
+
+	@Get("search")
+	@HttpCode(HttpStatus.OK)
+	@Version("1")
+	@Auth()
+	async searchByUsername(@Query(SearchUserByUsernameQueryDTO()) query: SearchUserByUsernameQueryDTOType) {
+		const users = await this.users.searchByUsername(query.username, {
+			limit: query.limit,
+		});
+
+		return this.userMapper.mapMany(users);
 	}
 
 	@Get("@:username")
