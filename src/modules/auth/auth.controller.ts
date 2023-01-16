@@ -70,6 +70,15 @@ export class AuthController {
 		return this.userMapper.mapCurrentWithToken(user, token);
 	}
 
+	@Post("logout")
+	@Version("1")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Auth()
+	async logout(@Req() req: Request) {
+		const currentSession = req.authenticatedSession;
+		await this.auth.logout(currentSession.id);
+	}
+
 	@Get("sessions")
 	@Version("1")
 	@HttpCode(HttpStatus.OK)

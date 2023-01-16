@@ -84,6 +84,14 @@ export class AuthService {
 	}
 
 	/**
+	 * Logout the current session
+	 * @param currentSessionId The current session id
+	 */
+	async logout(currentSessionId: bigint): Promise<void> {
+		await this.sessions.logout(currentSessionId);
+	}
+
+	/**
 	 * Logout of sessions
 	 * @param userId The id of the user
 	 * @param currentSessionId The current session id
