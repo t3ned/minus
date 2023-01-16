@@ -83,6 +83,24 @@ export class SessionService {
 	}
 
 	/**
+	 * Find many active sessions for a user
+	 * @param userId The id of the user
+	 *
+	 * @returns The sessions
+	 */
+	findManyForUserId(userId: bigint): Promise<Session[]> {
+		return this.prisma.session.findMany({
+			where: {
+				userId,
+				isActive: true,
+			},
+			orderBy: {
+				id: "asc",
+			},
+		});
+	}
+
+	/**
 	 * Create a authorization token
 	 * @param userId The id of the user owning the token
 	 *
