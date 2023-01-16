@@ -3,13 +3,27 @@ import {
 	GetUserByIdParamDTOType,
 	GetUserByUsernameParamDTO,
 	GetUserByUsernameParamDTOType,
+	SearchUserByUsernameQueryDTO,
+	SearchUserByUsernameQueryDTOType,
+	UpdateCurrentUserBodyDTO,
+	UpdateCurrentUserBodyDTOType,
 } from "./dto";
-import { Controller, Get, HttpCode, HttpStatus, Param, Query, Req, Version } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Patch,
+	Query,
+	Req,
+	Version,
+} from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UserMapper } from "./user.mapper";
 import { Auth } from "@/modules/auth";
 import { Request } from "express";
-import { SearchUserByUsernameQueryDTO, SearchUserByUsernameQueryDTOType } from "./dto/searchByUsername";
 
 @Controller("users")
 export class UserController {
@@ -26,6 +40,29 @@ export class UserController {
 	getCurrentUser(@Req() req: Request) {
 		const currentUser = req.authenticatedUser;
 		return this.userMapper.mapCurrent(currentUser);
+	}
+
+	@Patch("@me")
+	@HttpCode(HttpStatus.OK)
+	@Version("1")
+	@Auth()
+	async updateCurrentUser(
+		@Body(UpdateCurrentUserBodyDTO()) body: UpdateCurrentUserBodyDTOType,
+		@Req() req: Request,
+	) {
+		const currentUser = req.authenticatedUser;
+		const user = await this.users.update(currentUser, {
+			email: body.email,
+			displayName: body.display_name,
+			username: body.username,
+			firstName: body.first_name,
+			lastName: body.last_name,
+			countryCode: body.country_code,
+			languageCode: body.language_code,
+			gender: body.gender,
+		});
+
+		return this.userMapper.mapCurrent(user);
 	}
 
 	@Get("search")
