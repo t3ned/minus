@@ -17,7 +17,7 @@ export class UserService {
 	 *
 	 * @returns The user, with emails
 	 */
-	async create(options: UserService.CreateOptions): Promise<UserService.UserWithEmails> {
+	async create(options: UserService.CreateOptions): Promise<UserService.UserWithEmail> {
 		return this.prisma.$transaction(async (prisma) => {
 			const user = await prisma.user.create({
 				data: {
@@ -62,7 +62,6 @@ export class UserService {
 				...user,
 				primaryEmailId: primaryEmail.id,
 				primaryEmail: primaryEmail,
-				emails: [primaryEmail],
 			};
 		});
 	}
@@ -120,8 +119,7 @@ export namespace UserService {
 		gender: Gender;
 	}
 
-	export interface UserWithEmails extends User {
+	export interface UserWithEmail extends User {
 		primaryEmail: Email | null;
-		emails: Email[];
 	}
 }
