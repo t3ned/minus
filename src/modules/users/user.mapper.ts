@@ -1,9 +1,25 @@
 import { UserService } from "./user.service";
 import { Injectable } from "@nestjs/common";
-import { Email } from "@prisma/client";
+import { Email, User } from "@prisma/client";
 
 @Injectable()
 export class UserMapper {
+	/**
+	 * Map a user
+	 * @param user The user
+	 *
+	 * @returns The mapped user
+	 */
+	map(user: User): UserMapper.User {
+		return {
+			id: user.id.toString(),
+			display_name: user.displayName,
+			username: user.username,
+			roles: Number(user.roles),
+			public_flags: Number(user.publicFlags),
+		};
+	}
+
 	/**
 	 * Map the current user
 	 * @param user The current user
@@ -56,20 +72,23 @@ export class UserMapper {
 }
 
 export namespace UserMapper {
-	export interface CurrentUser {
+	export interface User {
 		id: string;
-		email: string;
-		email_verified: boolean;
 		display_name: string;
 		username: string;
+		roles: number;
+		public_flags: number;
+	}
+
+	export interface CurrentUser extends User {
+		email: string;
+		email_verified: boolean;
 		full_name: string;
 		first_name: string;
 		last_name: string;
 		locale: string;
 		gender: string;
-		roles: number;
 		flags: number;
-		public_flags: number;
 	}
 
 	export interface CurrentUserWithToken extends CurrentUser {

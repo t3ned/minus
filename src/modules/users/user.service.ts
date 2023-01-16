@@ -1,3 +1,4 @@
+import { UserNotFoundException } from "@/errors";
 import { PrismaService } from "@/providers";
 import { snowflake } from "@/utils";
 import { Injectable } from "@nestjs/common";
@@ -64,6 +65,35 @@ export class UserService {
 				primaryEmail: primaryEmail,
 			};
 		});
+	}
+
+	/**
+	 * Find a user by email
+	 * @param id The id of the user
+	 *
+	 * @returns The user, if found
+	 */
+	findById(id: bigint): Promise<User | null> {
+		return this.prisma.user.findUnique({
+			where: {
+				id,
+			},
+		});
+	}
+
+	/**
+	 * Find a user by email, or throw if not found
+	 * @param id The id of the user
+	 *
+	 * @returns The user
+	 */
+	async findByIdOrThrow(id: bigint): Promise<User> {
+		const user = await this.findById(id);
+		if (!user) {
+			throw new UserNotFoundException();
+		}
+
+		return user;
 	}
 
 	/**
