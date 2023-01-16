@@ -1,9 +1,9 @@
-import { UserNotFoundException } from "@/errors";
+import { EmailConflictException, UsernameConflictException, UserNotFoundException } from "@/errors";
 import { PrismaService } from "@/providers";
-import { snowflake } from "@/utils";
 import { Injectable } from "@nestjs/common";
 import { Email, User } from "@prisma/client";
 import normalizeEmail from "normalize-email";
+import { snowflake } from "@/utils";
 
 @Injectable()
 export class UserService {
@@ -63,7 +63,86 @@ export class UserService {
 				...user,
 				primaryEmailId: primaryEmail.id,
 				primaryEmail: primaryEmail,
+				emails: [primaryEmail],
 			};
+		});
+	}
+
+	/**
+	 * Update a user
+	 * @param user The user to update
+	 * @param options The update options
+	 *
+	 * @returns The user
+	 */
+	async update(
+		user: UserService.UserWithEmail,
+		options: UserService.UpdateOptions,
+	): Promise<UserService.UserWithEmail> {
+		return this.prisma.$transaction(async (prisma) => {
+			if (options.email) {
+				const primaryEmail = user.primaryEmail as Email;
+
+				if (primaryEmail.normalizedEmail !== normalizeEmail(options.email)) {
+					const emailIds = user.emails
+						.filter((email) => email.id !== primaryEmail.id)
+						.map((email) => email.id);
+
+					// delete previous email update requests
+					if (emailIds.length) {
+						await prisma.email.deleteMany({
+							where: {
+								id: {
+									in: emailIds,
+								},
+							},
+						});
+					}
+
+					await this.checkEmailConflict(options.email);
+					await prisma.email.create({
+						data: {
+							id: snowflake.generate(),
+							email: options.email,
+							normalizedEmail: normalizeEmail(options.email),
+							isVerified: false,
+							updatedAt: new Date(),
+							user: {
+								connect: {
+									id: user.id,
+								},
+							},
+						},
+					});
+
+					// TODO: send transfer email
+				}
+			}
+
+			if (options.username && user.normalizedUsername !== options.username.toLocaleLowerCase()) {
+				await this.checkUsernameConflict(options.username);
+			}
+
+			return prisma.user.update({
+				include: {
+					primaryEmail: true,
+					emails: true,
+				},
+				where: {
+					id: user.id,
+				},
+				data: {
+					displayName: options.displayName,
+					username: options.username,
+					normalizedUsername: options.username?.toLocaleLowerCase(),
+					firstName: options.firstName,
+					lastName: options.lastName,
+					countryCode: options.countryCode,
+					languageCode: options.languageCode,
+					gender: options.gender,
+					updatedAt: new Date(),
+				},
+			});
 		});
 	}
 
@@ -115,6 +194,17 @@ export class UserService {
 	}
 
 	/**
+	 * Check if a user exists with a given email
+	 * @param email The email to check
+	 */
+	async checkEmailConflict(email: string): Promise<void> {
+		const user = await this.findByEmail(email);
+		if (user) {
+			throw new EmailConflictException();
+		}
+	}
+
+	/**
 	 * Find a user by username
 	 * @param username The username to lookup
 	 *
@@ -141,6 +231,17 @@ export class UserService {
 		}
 
 		return user;
+	}
+
+	/**
+	 * Check if a user exists with a given username
+	 * @param email The email to check
+	 */
+	async checkUsernameConflict(username: string): Promise<void> {
+		const user = await this.findByUsername(username);
+		if (user) {
+			throw new UsernameConflictException();
+		}
 	}
 
 	/**
@@ -210,8 +311,20 @@ export namespace UserService {
 		gender: Gender;
 	}
 
+	export interface UpdateOptions {
+		email?: string;
+		displayName?: string;
+		username?: string;
+		firstName?: string;
+		lastName?: string;
+		countryCode?: string;
+		languageCode?: string;
+		gender?: Gender;
+	}
+
 	export interface UserWithEmail extends User {
 		primaryEmail: Email | null;
+		emails: Email[];
 	}
 
 	export interface SearchOptions {

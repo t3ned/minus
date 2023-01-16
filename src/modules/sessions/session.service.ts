@@ -105,6 +105,7 @@ export class SessionService {
 				user: {
 					include: {
 						primaryEmail: true,
+						emails: true,
 					},
 				},
 			},

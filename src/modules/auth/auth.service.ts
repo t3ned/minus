@@ -1,14 +1,9 @@
-import {
-	EmailConflictException,
-	InvalidCredentialsException,
-	UsernameConflictException,
-	UserNotFoundException,
-} from "@/errors";
+import { InvalidCredentialsException, UserNotFoundException } from "@/errors";
 import { SessionService } from "@/modules/sessions";
+import { ConfigService } from "@nestjs/config";
 import { UserService } from "@/modules/users";
 import { safeBigInt, sha256 } from "@/utils";
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { compare, hash } from "bcrypt";
 
 @Injectable()
@@ -31,15 +26,8 @@ export class AuthService {
 	 * @returns The user, session and authorization token
 	 */
 	async signup(options: AuthService.SignupOptions): Promise<AuthService.AuthenticatedResult> {
-		const existingUserWithEmail = await this.users.findByEmail(options.email);
-		if (existingUserWithEmail) {
-			throw new EmailConflictException();
-		}
-
-		const existingUserWithUsername = await this.users.findByUsername(options.username);
-		if (existingUserWithUsername) {
-			throw new UsernameConflictException();
-		}
+		await this.users.checkEmailConflict(options.email);
+		await this.users.checkUsernameConflict(options.username);
 
 		const saltRounds = this.config.getOrThrow<number>("security.passwordSaltRounds");
 		const hashedPassword = await hash(options.password, saltRounds);
