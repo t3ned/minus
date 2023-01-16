@@ -84,6 +84,21 @@ export class AuthService {
 	}
 
 	/**
+	 * Logout of sessions
+	 * @param userId The id of the user
+	 * @param currentSessionId The current session id
+	 * @param sessionIds The session ids to logout
+	 */
+	async logoutSessions(userId: bigint, currentSessionId: bigint, sessionIds: bigint[]): Promise<void> {
+		const uniqueSessionIds = [...new Set(sessionIds)];
+		const filteredSessionIds = uniqueSessionIds.filter((sessionId) => sessionId !== currentSessionId);
+		if (!filteredSessionIds.length) return;
+
+		const sessions = await this.sessions.findManyByUserIdAndSessionIds(userId, filteredSessionIds);
+		await Promise.allSettled(sessions.map((session) => this.sessions.logout(session.id)));
+	}
+
+	/**
 	 * Authenticate using a token
 	 * @param fullToken The full token ({base64 |> user_id}.${version}.{token})
 	 *

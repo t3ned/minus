@@ -55,6 +55,41 @@ export class SessionService {
 	}
 
 	/**
+	 * Logout of a session
+	 * @param id The id of the session
+	 *
+	 * @returns The session
+	 */
+	logout(id: bigint): Promise<Session> {
+		return this.prisma.session.update({
+			where: {
+				id,
+			},
+			data: {
+				isActive: false,
+			},
+		});
+	}
+
+	/**
+	 * Find many sessions by user id and session ids
+	 * @param userId The user id
+	 * @param sessionIds The ids of the sessions
+	 *
+	 * @returns The session, if found
+	 */
+	findManyByUserIdAndSessionIds(userId: bigint, sessionIds: bigint[]): Promise<Session[]> {
+		return this.prisma.session.findMany({
+			where: {
+				id: {
+					in: sessionIds,
+				},
+				userId,
+			},
+		});
+	}
+
+	/**
 	 * Find a session by user id and version
 	 * @param userId The id of the user
 	 * @param version The session version
