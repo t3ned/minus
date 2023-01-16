@@ -1,5 +1,12 @@
+import {
+	LoginBodyDTO,
+	LoginBodyDTOType,
+	LogoutSessionsBodyDTO,
+	LogoutSessionsBodyDTOType,
+	SignupBodyDTO,
+	SignupBodyDTOType,
+} from "./dto";
 import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Ip, Post, Req, Version } from "@nestjs/common";
-import { LoginBodyDTO, LoginBodyDTOType, SignupBodyDTO, SignupBodyDTOType } from "./dto";
 import { SessionService, SessionMapper } from "@/modules/sessions";
 import { UserMapper } from "@/modules/users";
 import { AuthService } from "./auth.service";
@@ -72,5 +79,18 @@ export class AuthController {
 		const currentSession = req.authenticatedSession;
 		const sessions = await this.sessions.findManyForUserId(currentUser.id);
 		return this.sessionMapper.mapCurrentAndMany(currentSession, sessions);
+	}
+
+	@Post("sessions/logout")
+	@Version("1")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Auth()
+	async logoutSessions(
+		@Body(LogoutSessionsBodyDTO()) body: LogoutSessionsBodyDTOType,
+		@Req() req: Request,
+	) {
+		const currentUser = req.authenticatedUser;
+		const currentSession = req.authenticatedSession;
+		await this.auth.logoutSessions(currentUser.id, currentSession.id, body.session_ids);
 	}
 }
