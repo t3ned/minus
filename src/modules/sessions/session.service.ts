@@ -1,7 +1,8 @@
 import { PrismaService } from "@/providers";
 import { sha256, snowflake } from "@/utils";
 import { Injectable } from "@nestjs/common";
-import { Session, User } from "@prisma/client";
+import { Session } from "@prisma/client";
+import { UserService } from "../users";
 import { randomBytes } from "crypto";
 import UAParser from "ua-parser-js";
 import geoip from "geoip-lite";
@@ -66,7 +67,11 @@ export class SessionService {
 	): Promise<SessionService.SessionWithUser | null> {
 		return this.prisma.session.findUnique({
 			include: {
-				user: true,
+				user: {
+					include: {
+						primaryEmail: true,
+					},
+				},
 			},
 			where: {
 				userVersion: {
@@ -108,7 +113,7 @@ export namespace SessionService {
 	}
 
 	export interface SessionWithUser extends Session {
-		user: User;
+		user: UserService.UserWithEmail;
 	}
 
 	export interface Token {
