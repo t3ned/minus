@@ -1,6 +1,7 @@
 import { EmailConflictException, UsernameConflictException } from "@/errors";
 import { SessionService } from "@/modules/sessions";
 import { UserService } from "@/modules/users";
+import { safeBigInt, sha256 } from "@/utils";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Session } from "@prisma/client";
@@ -49,6 +50,25 @@ export class AuthService {
 			session,
 			token: session.authorization,
 		};
+	}
+
+	/**
+	 * Authenticate using a token
+	 * @param fullToken The full token ({base64 |> user_id}.${version}.{token})
+	 *
+	 * @returns The session, if it exists
+	 */
+	async authenticate(fullToken: string): Promise<SessionService.SessionWithUser | null> {
+		const [base64UserId, version, token] = fullToken.split(".");
+		if (!base64UserId || !version || !token) return null;
+
+		const userId = safeBigInt(Buffer.from(base64UserId, "base64url").toString("utf-8"));
+		if (!userId) return null;
+
+		const session = await this.sessions.findSessionByUserIdAndVersion(userId, version);
+		if (!session || !session.isActive || session.token !== sha256(token)) return null;
+
+		return session;
 	}
 }
 

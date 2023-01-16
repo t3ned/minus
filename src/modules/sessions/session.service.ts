@@ -1,7 +1,7 @@
 import { PrismaService } from "@/providers";
 import { sha256, snowflake } from "@/utils";
 import { Injectable } from "@nestjs/common";
-import { Session } from "@prisma/client";
+import { Session, User } from "@prisma/client";
 import { randomBytes } from "crypto";
 import UAParser from "ua-parser-js";
 import geoip from "geoip-lite";
@@ -54,6 +54,30 @@ export class SessionService {
 	}
 
 	/**
+	 * Find a session by user id and version
+	 * @param userId The id of the user
+	 * @param version The session version
+	 *
+	 * @returns The session with user
+	 */
+	findSessionByUserIdAndVersion(
+		userId: bigint,
+		version: string,
+	): Promise<SessionService.SessionWithUser | null> {
+		return this.prisma.session.findUnique({
+			include: {
+				user: true,
+			},
+			where: {
+				userVersion: {
+					userId,
+					version,
+				},
+			},
+		});
+	}
+
+	/**
 	 * Create a authorization token
 	 * @param userId The id of the user owning the token
 	 *
@@ -81,6 +105,10 @@ export namespace SessionService {
 
 	export interface SessionServiceWithAuthorization extends Session {
 		authorization: string;
+	}
+
+	export interface SessionWithUser extends Session {
+		user: User;
 	}
 
 	export interface Token {
