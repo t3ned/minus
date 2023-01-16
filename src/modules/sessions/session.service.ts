@@ -40,7 +40,7 @@ export class SessionService {
 				city: geolocation?.city,
 				region: geolocation?.region,
 				timezone: geolocation?.timezone,
-				countryCode: geolocation?.country.toString(),
+				countryCode: geolocation?.country.toLowerCase(),
 				browser: userAgent?.browser.name,
 				operatingSystem: userAgent?.os.name,
 				user: {
