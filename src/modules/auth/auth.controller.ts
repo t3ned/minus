@@ -8,7 +8,6 @@ import {
 } from "./dto";
 import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Ip, Post, Req, Version } from "@nestjs/common";
 import { SessionService, SessionMapper } from "@/modules/sessions";
-import { UserMapper } from "@/modules/users";
 import { AuthService } from "./auth.service";
 import { Request } from "express";
 import { Auth } from "./guard";
@@ -25,18 +24,17 @@ export class AuthController {
 		private auth: AuthService,
 		private sessions: SessionService,
 		private sessionMapper: SessionMapper,
-		private userMapper: UserMapper,
 	) {}
 
 	@Post("signup")
 	@Version("1")
 	@HttpCode(HttpStatus.CREATED)
-	async signup(
+	signup(
 		@Body(SignupBodyDTO()) body: SignupBodyDTOType,
 		@Headers("user-agent") userAgent: string,
 		@Ip() ipAddress: string,
 	) {
-		const { user, token } = await this.auth.signup({
+		return this.auth.signup({
 			email: body.email,
 			username: body.username,
 			firstName: body.first_name,
@@ -48,26 +46,22 @@ export class AuthController {
 			ipAddress,
 			userAgent,
 		});
-
-		return this.userMapper.mapCurrentWithToken(user, token);
 	}
 
 	@Post("login")
 	@Version("1")
 	@HttpCode(HttpStatus.CREATED)
-	async login(
+	login(
 		@Body(LoginBodyDTO()) body: LoginBodyDTOType,
 		@Headers("user-agent") userAgent: string,
 		@Ip() ipAddress: string,
 	) {
-		const { user, token } = await this.auth.login({
+		return this.auth.login({
 			username: body.username,
 			password: body.password,
 			ipAddress,
 			userAgent,
 		});
-
-		return this.userMapper.mapCurrentWithToken(user, token);
 	}
 
 	@Post("logout")

@@ -149,11 +149,8 @@ export class UserService {
 	 *
 	 * @returns The user, if found
 	 */
-	findByEmailOrUsername(username: string): Promise<UserService.UserWithEmail | null> {
+	findByEmailOrUsername(username: string): Promise<User | null> {
 		return this.prisma.user.findFirst({
-			include: {
-				primaryEmail: true,
-			},
 			where: {
 				OR: [
 					{

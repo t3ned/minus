@@ -47,17 +47,6 @@ export class UserMapper {
 	}
 
 	/**
-	 * Map the current user, with a token
-	 * @param user The current user
-	 * @param token The token
-	 *
-	 * @returns The mappped user
-	 */
-	mapCurrentWithToken(user: UserService.UserWithEmail, token: string): UserMapper.CurrentUserWithToken {
-		return { ...this.mapCurrent(user), token };
-	}
-
-	/**
 	 * Map a gender
 	 * @param gender The gender
 	 *
@@ -89,9 +78,5 @@ export namespace UserMapper {
 		locale: string;
 		gender: string;
 		flags: number;
-	}
-
-	export interface CurrentUserWithToken extends CurrentUser {
-		token: string;
 	}
 }

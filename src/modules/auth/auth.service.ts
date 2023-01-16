@@ -9,7 +9,6 @@ import { UserService } from "@/modules/users";
 import { safeBigInt, sha256 } from "@/utils";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Session } from "@prisma/client";
 import { compare, hash } from "bcrypt";
 
 @Injectable()
@@ -51,8 +50,6 @@ export class AuthService {
 		// TODO: send email verification
 
 		return {
-			user,
-			session,
 			token: session.authorization,
 		};
 	}
@@ -77,8 +74,6 @@ export class AuthService {
 		const session = await this.sessions.create(user.id, options);
 
 		return {
-			user,
-			session,
 			token: session.authorization,
 		};
 	}
@@ -139,8 +134,6 @@ export namespace AuthService {
 	}
 
 	export interface AuthenticatedResult {
-		user: UserService.UserWithEmail;
-		session: Session;
 		token: string;
 	}
 }
