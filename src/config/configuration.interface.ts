@@ -32,6 +32,12 @@ export interface Configuration {
 		tracesSampleRate: number;
 	};
 
+	sendgrid: {
+		apiKey: string;
+		fromEmail: string;
+		fromName: string;
+	};
+
 	security: {
 		passwordSaltRounds: number;
 	};

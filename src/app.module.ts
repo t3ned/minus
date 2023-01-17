@@ -7,7 +7,7 @@ import configuration from "./config/configuration";
 
 import { HealthModule } from "@/modules/health";
 
-import { PrismaModule, RedisModule } from "@/providers";
+import { PrismaModule, RedisModule, SendGridModule } from "@/providers";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { UserModule } from "@/modules/users";
 import { SessionModule } from "@/modules/sessions";
@@ -21,6 +21,7 @@ import { AuthGuard } from "./modules/auth/guard";
 		HealthModule,
 		RedisModule,
 		PrismaModule,
+		SendGridModule,
 		AuthModule,
 		UserModule,
 		SessionModule,

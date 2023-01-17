@@ -38,6 +38,12 @@ const configuration: Configuration = {
 		tracesSampleRate: env.num("SENTRY_TRACES_SAMPLE_RATE", 1.0),
 	},
 
+	sendgrid: {
+		apiKey: env.str("SENDGRID_API_KEY"),
+		fromEmail: env.str("SENDGRID_FROM_EMAIL"),
+		fromName: env.str("SENDGRID_FROM_NAME"),
+	},
+
 	security: {
 		passwordSaltRounds: 10,
 	},
